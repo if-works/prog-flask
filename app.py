@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for session management and flashing messages
@@ -12,18 +13,18 @@ def index():
             try:
                 client = MailchimpMarketing.Client()
                 client.set_config({
-                    "api_key": "YOUR_API_KEY",
-                    "server": "YOUR_SERVER_PREFIX"
+                    "api_key": os.environ.get("MAILCHIMP_API_KEY"),
+                    "server": os.environ.get("MAILCHIMP_SERVER_PREFIX")
                 })
 
                 email_address = request.form['email']
                 response = client.lists.add_list_member("list_id", {
                     "email_address": email_address,
-                    "status": "subscribed"  # or 'pending' if you want double opt-in
+                    "status": "subscribed"  # or 'pending' for double opt-in
                 })
                 flash('Email successfully added!', 'success')
             except ApiClientError as error:
-                flash(f"An error occurred: {error.text}", 'error')
+                flash(f"An error occurred.", 'error')
         else:
             flash('You must consent and provide an email address.', 'error')
         
