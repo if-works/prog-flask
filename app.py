@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for session management and flashing messages
 
-MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_SERVER_PREFIX")
+MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
 MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY"),
 MAILCHIMP_SERVER_PREFIX = os.environ.get("MAILCHIMP_SERVER_PREFIX")
 
@@ -16,7 +16,7 @@ client.set_config({
     "server": MAILCHIMP_SERVER_PREFIX
 })
 
-response = mailchimp.ping.get()
+response = client.ping.get()
 print(response)
 
 @app.route('/', methods=['GET', 'POST'])
