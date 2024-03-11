@@ -1,2 +1,3 @@
 Flask
 Gunicorn
+mailchimp_marketing
