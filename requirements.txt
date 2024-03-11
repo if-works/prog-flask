@@ -1,3 +1,6 @@
 Flask
 Gunicorn
-mailchimp_marketing
+os
+requests
+json
+hashlib

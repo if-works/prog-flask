@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import mailchimp_marketing as MailchimpMarketing
-from mailchimp_marketing.api_client import ApiClientError
-import os, requests, json
+import os, requests, json, hashlib
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for session management and flashing messages
@@ -30,14 +28,18 @@ def index():
                 'status': 'subscribed',
             }
 
-            url = f"{mc_base_url}/lists/{MAILCHIMP_LIST_ID}/members/"
-            response = requests.post(url, auth=mc_auth, headers=mc_headers, json=data)
+            hashed = hashlib.md5(email_address.encode())
+            url = f"{mc_base_url}/lists/{MAILCHIMP_LIST_ID}/members/{hashed.hexdigest()}"
+            
+            response = requests.put(url, auth=mc_auth, headers=mc_headers, json=data)
+
+            body = json.loads(response.text)
 
             if response.status_code == 200 or response.status_code == 201:
                 flash('Email successfully added!', 'success')
             else:
-                error_message = json.loads(response.text).get('title', 'An error occurred')
-                flash(f"{error_message}", 'error')
+                print(response.text)
+                flash("An error occured", 'error')
         else:
             flash('You must consent and provide an email address.', 'error')
 
